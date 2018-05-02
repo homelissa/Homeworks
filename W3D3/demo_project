@@ -1,0 +1,39 @@
+class CreatePerson < ActiveRecord::Migration[5.2]
+  def change
+    create_table :people do |t|
+      t.string :name, null: false
+      t.integer :house_id, null: false
+
+      t.timestamps
+    end
+    add_index :people, :house_id
+  end
+end
+
+class CreateHouses < ActiveRecord::Migration[5.2]
+  def change
+    create_table :houses do |t|
+      t.string :address
+
+      t.timestamps
+    end
+  end
+end
+
+class House < ApplicationRecord
+  validates :address, presence: true
+
+  has_many :residents,
+    primary_key: :id,
+    foreign_key: :house_id,
+    class_name: :Person
+end
+
+class Person < ApplicationRecord
+  validates :name, :house, presence: true
+
+  belongs_to :house,
+    primary_key: :id,
+    foreign_key: :house_id,
+    class_name: :House
+end
